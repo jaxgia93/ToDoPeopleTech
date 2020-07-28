@@ -1,47 +1,71 @@
 import React, { useState } from 'react';
-import { View, Text, Button } from 'react-native'
+import { View, Button } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux';
-import { Input } from 'react-native-elements';
+import { Input, Text } from 'react-native-elements';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button/index';
-import AsyncStorage from '@react-native-community/async-storage'
+import { AsyncStorage } from "react-native"
+import style from '../assets/css/style.js'
 
 const Registration = () => {
     const dispatch = useDispatch()
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [gender, setGender] = useState("M")
-    const [children, setChildren] = useState("")
+    const [user, setUser] = useState({
+        name: "",
+        email: "",
+        password: "",
+        gender: "",
+        children: ""
+    })
 
-
-    const getValue=async (id)=>{
-
-       return await AsyncStorage.getItem(id)
-    }
-
-
-    const setValue=async (id,value)=>{
-
-         await AsyncStorage.setItem(id,JSON.stringify(value))
-     }
 
     var radio_props = [
         { label: 'Maschio', value: "M" },
         { label: 'Femmina', value: "F" }
     ];
 
+    const storeData = async (key, data) => {
+        try {
+            var value = await AsyncStorage.getItem(key)
+            if (value!==null) alert("errore utente già creato")
+            else
+            await AsyncStorage.setItem(key, JSON.stringify(data))
+
+        } catch (e) {
+
+            alert("errore")
+        }
+    }
+
+
+
+
+    const _retrieveData = async (key) => {
+        try {
+            //alert(key)
+
+            var value = await AsyncStorage.getItem(key)
+            console.log((JSON.parse(value)))
+        } catch (error) {
+            alert(error)
+        }
+    };
+
     return (
-        <View>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nome" />
-            <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-            <Input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+        <View style={style.container}>
+            <Text h1>Registrazione</Text>
+            <Input value={user.name} onChangeText={(newUser) => setUser({ ...user, name: newUser })} placeholder="Nome" />
+            <Input value={user.email} onChangeText={(newEmail) => { setUser({ ...user, email: newEmail }) }} placeholder="Email" />
+            <Input value={user.password} onChangeText={(newPassword) => setUser({ ...user, password: newPassword })} placeholder="Password" />
             <RadioForm
                 radio_props={radio_props}
-                onPress={(value) => { setGender({ value: value }) }}
+                onPress={(newGender) => { setUser({ ...user, gender: newGender }) }}
             />
-            <Input value={children} onChange={(e) => setChildren(e.target.value)} placeholder="Bambini" keyboardType="numeric" />
-            <Button onPress={() => { setValue("@user",email)}} title="Salva" ></Button>
-            <Button onPress={() => { console.log(getValue("@user")) }} title="Carica" ></Button>
+
+
+            {user.gender === 'F' && <Input value={user.children} onChangeText={(newChildren) => setUser({ ...user, children: newChildren })} placeholder="Bambini" keyboardType="numeric" />}
+            <Button title="Registrati" onPress={() => { storeData(user.email, user), _retrieveData(user.email) }} />
+            <Button title="Leggi" onPress={() => {  _retrieveData(user.email) }} />
+
+
         </View>
     )
 }

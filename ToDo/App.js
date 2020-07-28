@@ -11,6 +11,7 @@ import { createSwitchNavigator } from 'react-navigation';
 import LoginScreen from './src/screen/LoginScreen'
 import InitialScreen from './src/screen/InitialScreen'
 import RegistrationScreen from './src/screen/RegistrationScreen'
+import Todo from './src/components/toDo';
 
 
 const InitialContainer = createStackNavigator({
