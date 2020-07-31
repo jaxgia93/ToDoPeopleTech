@@ -5,15 +5,19 @@ import { Input, Text } from 'react-native-elements';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button/index';
 import { AsyncStorage } from "react-native"
 import style from '../assets/css/style.js'
+import * as  ActionType from '../actions/toDoActions'
 
-const Registration = () => {
+const Registration = (props) => {
     const dispatch = useDispatch()
+
     const [user, setUser] = useState({
+        id: Math.floor(Math.random() * 10) + 1,
         name: "",
         email: "",
         password: "",
-        gender: "",
-        children: ""
+        gender: "M",
+        children: "",
+        toDo: [],
     })
 
 
@@ -21,33 +25,6 @@ const Registration = () => {
         { label: 'Maschio', value: "M" },
         { label: 'Femmina', value: "F" }
     ];
-
-    const storeData = async (key, data) => {
-        try {
-            var value = await AsyncStorage.getItem(key)
-            if (value!==null) alert("errore utente già creato")
-            else
-            await AsyncStorage.setItem(key, JSON.stringify(data))
-
-        } catch (e) {
-
-            alert("errore")
-        }
-    }
-
-
-
-
-    const _retrieveData = async (key) => {
-        try {
-            //alert(key)
-
-            var value = await AsyncStorage.getItem(key)
-            console.log((JSON.parse(value)))
-        } catch (error) {
-            alert(error)
-        }
-    };
 
     return (
         <View style={style.container}>
@@ -62,8 +39,8 @@ const Registration = () => {
 
 
             {user.gender === 'F' && <Input value={user.children} onChangeText={(newChildren) => setUser({ ...user, children: newChildren })} placeholder="Bambini" keyboardType="numeric" />}
-            <Button title="Registrati" onPress={() => { storeData(user.email, user), _retrieveData(user.email) }} />
-            <Button title="Leggi" onPress={() => {  _retrieveData(user.email) }} />
+            <Button title="Registrati" onPress={() => { dispatch(ActionType.registrationUser(user)) }} />
+            <Button title="Leggi" onPress={() => { props.navigation.navigate("ToDo") }} />
 
 
         </View>
